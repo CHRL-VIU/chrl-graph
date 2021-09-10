@@ -1,0 +1,31 @@
+/* update shiny slider input */
+
+.irs-single, .irs-bar-edge, .irs-bar {background: grey;}
+
+.irs-single, .irs-from, .irs-to, .irs-max, .irs-min  {visibility: hidden !important;}
+
+.svg-container {padding-bottom: "0px"}
+
+
+/* handle ipad width. This makes it so the page displays as block when less than 1050 px wide */
+@media (max-width: 1050px){
+  .col-sm-2, .col-sm-3 {
+    width: 100%;
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+
+    .col-sm-9, .col-sm-10 {
+    width: 100%;
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+
+  .well {
+    padding: 0px;
+  }
+}
+
+
+
+

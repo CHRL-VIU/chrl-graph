@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+config.r
+.list
+.history
+.DS_Store
+.Rproj
+wx-website.Rproj
+.dcf
+rsconnect/
