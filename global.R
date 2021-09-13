@@ -69,7 +69,8 @@ logoPics <- list(
   comox_logo = tags$a(href='https://www.comoxvalleyrd.ca/', tags$img(src="comox.png", height = "50", width = "200", hspace = "10", vspace = "10")),
   mosaic_logo = tags$a(href='https://www.mosaicforests.com/', tags$img(src="mosaic.jpg", height = "60", width = "190", hspace = "10", vspace = "10")),
   bcparks_logo = tags$a(href='https://www.comoxvalleyrd.ca/', tags$img(src="bcparks.png", height = "100", width = "100", hspace = "10", vspace = "10")),
-  bcts_logo = tags$a(href='https://www.comoxvalleyrd.ca/', tags$img(src="bcts.png", height = "100", width = "200", hspace = "10", vspace = "10"))
+  bcts_logo = tags$a(href='https://www.comoxvalleyrd.ca/', tags$img(src="bcts.png", height = "100", width = "200", hspace = "10", vspace = "10")),
+  gwa_logo = tags$a(href='http://gitksanwatershed.com/', tags$img(src="gwa.png", height = "82", width = "120", hspace = "10", vspace = "10"))
 
   )
 
@@ -358,7 +359,20 @@ stationMeta = list(
                                                        logoPics$bcenv_logo,
                                                        logoPics$mosaic_logo,
                                                        logoPics$viu_logo,
-                                                       logoPics$canada_logo))
+                                                       logoPics$canada_logo)),
+                    upperskeena = list(name = "Upper Skeena",
+                                        elevation = 1546,
+                                        startYear = 2021,
+                                        lat = 56.53839,
+                                        lon = -127.65730,
+                                        params = sec_gen_FTS_params,
+                                        logos = column(12, align = "center", style='padding:0px;',
+
+                                                       logoPics$gwa_logo,
+                                                       logoPics$bcgov_logo,
+                                                       logoPics$bcenv_logo,
+                                                       logoPics$viu_logo,
+                                                       logoPics$canada_logo))                           
 )
 
 stnNameDict <- list(
@@ -380,7 +394,8 @@ stnNameDict <- list(
                     "Perseverance" = "perseverance",
                     "Mount Arrowsmith" = "mountarrowsmith",
                     "Mount Cayley" = "mountcayley",
-                    "Tetrahedron" = "tetrahedron"
+                    "Tetrahedron" = "tetrahedron",
+                    "Upper Skeena" = "upperskeena"
 )
 
 varsDict <- list("DateTime" = "DateTime",
