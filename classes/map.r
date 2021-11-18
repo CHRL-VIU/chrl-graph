@@ -6,7 +6,7 @@ output$map <- renderLeaflet({
     addProviderTiles("CartoDB.Positron") %>%
     # addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
     # addLayersControl(baseGroups = c("Default", "Satellite"), options = layersControlOptions(collapsed = FALSE), position = ("topleft")) %>%
-    setView(lng = -129.5, lat = 53.5, zoom = 6) %>%
+    setView(lng = -128, lat = 53.75, zoom = 5) %>%
     addMarkers(data = stnCoords, layerId = ~Name, ~Longitude, ~Latitude, label = ~htmltools::htmlEscape(stnCoords$Label[stnCoords$Name == Name]), labelOptions = labelOptions(textsize = "12px"))
 })
 
