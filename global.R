@@ -70,8 +70,8 @@ logoPics <- list(
   mosaic_logo = tags$a(href='https://www.mosaicforests.com/', tags$img(src="mosaic.jpg", height = "60", width = "190", hspace = "10", vspace = "10")),
   bcparks_logo = tags$a(href='https://www.comoxvalleyrd.ca/', tags$img(src="bcparks.png", height = "100", width = "100", hspace = "10", vspace = "10")),
   bcts_logo = tags$a(href='https://www.comoxvalleyrd.ca/', tags$img(src="bcts.png", height = "100", width = "200", hspace = "10", vspace = "10")),
-  gwa_logo = tags$a(href='http://gitksanwatershed.com/', tags$img(src="gwa.png", height = "82", width = "120", hspace = "10", vspace = "10"))
-
+  gwa_logo = tags$a(href='http://gitksanwatershed.com/programs/indigenous-community-based-climate-monitoring-programs/', tags$img(src="gwa.png", height = "660", width = "746", hspace = "10", vspace = "10"))
+  CIRNAC_logo = tags$a(href='https://www.rcaanc-cirnac.gc.ca/eng/1509728370447/1594738205979', tags$img(src="CIRNAC.png", height = "94", width = "329", hspace = "10", vspace = "10"))
   )
 
 #### Station Meta List - this is a nested list.  #####
@@ -369,10 +369,11 @@ stationMeta = list(
                                         logos = column(12, align = "center", style='padding:0px;',
 
                                                        logoPics$gwa_logo,
-                                                       logoPics$bcgov_logo,
-                                                       logoPics$bcenv_logo,
+                                                       logoPics$CIRNAC_logo,
                                                        logoPics$viu_logo,
-                                                       logoPics$canada_logo))                           
+                                                       logoPics$bcgov_logo,
+                                                       logoPics$bcenv_logo))
+                                                                                 
 )
 
 stnNameDict <- list(
