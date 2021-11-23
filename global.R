@@ -70,9 +70,8 @@ logoPics <- list(
   mosaic_logo = tags$a(href='https://www.mosaicforests.com/', tags$img(src="mosaic.jpg", height = "60", width = "190", hspace = "10", vspace = "10")),
   bcparks_logo = tags$a(href='https://www.comoxvalleyrd.ca/', tags$img(src="bcparks.png", height = "100", width = "100", hspace = "10", vspace = "10")),
   bcts_logo = tags$a(href='https://www.comoxvalleyrd.ca/', tags$img(src="bcts.png", height = "100", width = "200", hspace = "10", vspace = "10")),
-  gwa_logo = tags$a(href='http://gitksanwatershed.com/programs/indigenous-community-based-climate-monitoring-programs/', tags$img(src="gwa.png", height = "221", width = "250", hspace = "10", vspace = "10"))
-  CIRNAC_logo = tags$a(href='https://www.rcaanc-cirnac.gc.ca/eng/1509728370447/1594738205979', tags$img(src="CIRNAC.png", height = "79", width = "275", hspace = "10", vspace = "10"))
-
+  gwa_logo = tags$a(href='http://gitksanwatershed.com/programs/indigenous-community-based-climate-monitoring-programs/', tags$img(src="gwa.png", height = "221", width = "250", hspace = "10", vspace = "10")),
+  CIRNAC_logo = tags$a(href='https://www.rcaanc-cirnac.gc.ca/eng/1509728370447/1594738205979', tags$img(src="CIRNAC.jpg", width = "275", hspace = "10", vspace = "10"))
   )
 
 #### Station Meta List - this is a nested list.  #####
