@@ -3,7 +3,7 @@
 output$header <- renderUI({
   req(input$preset_site)
   str1 <- paste0("<h2>", stationMeta[[input$preset_site]][1], " (", stationMeta[[input$preset_site]][2], " m)", "</h2>")
-  if(input$preset_site == 'tetrahedron'){
+  if(input$preset_site == 'INSERT STATION WITH TIPPING BUCKET PROBLEM HERE'){
     HTML(paste(str1, p(tetrahedronDisclaimer, style = "color:red")))
   }
   else{HTML(paste(str1))}
@@ -17,7 +17,7 @@ preset_data_query <- reactive({
   timeStart <- ((Sys.time() - hours(8)) - days(7)) #have to control for server being in UTC and db data stored as UTC even though is acutally PST
   conn <- do.call(DBI::dbConnect, args)
   on.exit(DBI::dbDisconnect(conn))
-  if(input$preset_site == 'tetrahedron'){
+  if(input$preset_site == 'INSERT STATION WITH TIPPING BUCKET PROBLEM HERE'){
     query <- paste0("SELECT DateTime, Air_Temp, RH, Snow_Depth, PC_Raw_Pipe, Wind_Speed, Wind_Dir FROM clean_",input$preset_site," WHERE DateTime >= '",timeStart, "'")
     data <- dbGetQuery(conn, query)
   }
@@ -54,7 +54,7 @@ observe({
 output$precipTable <- renderTable({
   req(preset_data_query())
   req(input$preset_site)
-  if(input$preset_site == 'tetrahedron'){
+  if(input$preset_site == 'INSERT STATION WITH TIPPING BUCKET PROBLEM HERE'){
     # no rain at tett so have to disable table - precip total too erroneous to show
 
     precipSummary <- NULL
@@ -141,7 +141,7 @@ output$plot_Snow <- renderPlotly({
   req(preset_data_query())
   req(input$preset_site)
 
-  if(input$preset_site == 'tetrahedron'){
+  if(input$preset_site == 'INSERT STATION WITH TIPPING BUCKET PROBLEM HERE'){
     df <- preset_data_query() %>%
       select(DateTime, Snow_Depth, precip = PC_Raw_Pipe) %>%
       mutate(precip = ifelse(precip < 0, 0, precip))
