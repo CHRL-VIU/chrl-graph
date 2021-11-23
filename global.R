@@ -376,6 +376,7 @@ stationMeta = list(
 )
 
 stnNameDict <- list(
+                    "Upper Skeena" = "upperskeena",
                     "Datlamen Pass" = "datlamen",
                     "Rennell Pass" = "rennellpass",
                     "Mount Maya" = "mountmaya",
@@ -394,8 +395,7 @@ stnNameDict <- list(
                     "Perseverance" = "perseverance",
                     "Mount Arrowsmith" = "mountarrowsmith",
                     "Mount Cayley" = "mountcayley",
-                    "Tetrahedron" = "tetrahedron",
-                    "Upper Skeena" = "upperskeena"
+                    "Tetrahedron" = "tetrahedron"
 )
 
 varsDict <- list("DateTime" = "DateTime",
