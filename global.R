@@ -296,12 +296,12 @@ stationMeta = list(
                                            logoPics$canada_logo,
                                            logoPics$bcts_logo)),
 
-                    tetrahedron = list(name = "Tetrahedron",
+                    tetrahedron = list(name = "Tetrahedron", # removed PC_Tipper and PP_pipe 2021-10, cumulative tipper is only 1/2 the actual rate. new bucket has a 2 mm / tip cal and the logger program is set to 1 mm / tiip
                                        elevation = 1423,
                                        startYear = 2018,
                                        lat = 49.599565,
                                        lon = -123.606128,
-                                       params = c("Air_Temp", "RH", "BP", "Wind_Speed", "Wind_Dir", "Pk_Wind_Speed", "Pk_Wind_Dir", "PC_Tipper", "PP_Tipper", "PC_Raw_Pipe", "PP_Pipe", "Snow_Depth", "SWE", "Solar_Rad", "Soil_Moisture", "Soil_Temperature", "Batt"),
+                                       params = c("Air_Temp", "RH", "BP", "Wind_Speed", "Wind_Dir", "Pk_Wind_Speed", "Pk_Wind_Dir", "PP_Tipper", "PC_Raw_Pipe", "Snow_Depth", "SWE", "Solar_Rad", "Soil_Moisture", "Soil_Temperature", "Batt"),
                                        logos = column(12, align = "center", style='padding:0px;',
 
                                                         logoPics$scrd_logo,
