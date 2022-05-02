@@ -2,7 +2,7 @@
 
 output$header2 <- renderUI({
   req(input$custom_site)
-  str1 <- paste0("<h2>", stationMeta[[input$custom_site]][1], " (", stationMeta[[input$custom_site]][2], " m)", "</h2>")
+  str1 <- paste0("<h2>", station_meta[[input$custom_site]][1], " (", station_meta[[input$custom_site]][2], " m)", "</h2>")
   HTML(paste(str1))
 })
 
@@ -20,30 +20,12 @@ custom_data_query <- reactive({
 
 })
 
-# # create warning for delayed transmission
-# observe({
-#   req(input$custom_site)
-#   req(custom_data_query())
-#   if(input$smenu == "cstm_graph"){
-#     sysTimePST <- Sys.time() - hours(8)
-#     latestTrans <- max(custom_data_query()$DateTime)
-#     timeDiff <- as.integer(difftime(sysTimePST, latestTrans, unit = "hours"))
-#     if(timeDiff > 1){
-#       showModal(modalDialog(
-#         title = "Warning:",
-#         paste("The last transmission was ", timeDiff, "hours ago."),
-#         easyClose = T
-#       ))
-#     }
-#   }
-# })
-
 # reactive element to create year list based on available years for chosen station
 observe({
   # need to find the year range of selected sites. finds the max of the two start years as the min.
-  start_years <- stationMeta[[input$custom_site]][3]
+  start_years <- station_meta[[input$custom_site]][3]
   min_year <- unname(unlist(lapply(start_years, max)))
-  max_year <- wtr_yr(Sys.Date(), 10) # return current water year.
+  max_year <- weatherdash::wtr_yr(Sys.Date(), 10) # return current water year.
   year_range <- seq.int(min_year, max_year, by = 1)
   updateSelectInput(session, "custom_year", "Select Water Year:", year_range, selected = max_year)
 })
@@ -51,7 +33,7 @@ observe({
 # get available variables for selected station
 output$varSelection <- renderUI({
   # get colnames from reactive dataset
-  stnVars <- unname(unlist(stationMeta[[input$custom_site]][6]))
+  stnVars <- unname(unlist(station_meta[[input$custom_site]][6]))
 
   var_subset <- Filter(function(x) any(stnVars %in% x), varsDict)
 
@@ -109,7 +91,7 @@ finalData <- reactive({
     if(input$cleanSnowCstm == "yes"){
       flag  <- ("Snow_Depth" %in% input$custom_var)
       clean <- input$cleanSnow
-      df <- cleanSnowData(data = df, spike_th = 10, roc_hi_th = 40, roc_low_th = 75)
+      df <- spike_clean(data = df, 'DateTime', 'Snow_Depth', spike_th = 10, roc_hi_th = 40, roc_low_th = 75)
     }
     else{return(df)}
   }
@@ -117,7 +99,7 @@ finalData <- reactive({
 })
 
 
-# plot two variables on one chart
+# plot for custom graphs page
 output$plot1 <- renderPlotly({
   req(input$custom_site)
   req(input$custom_year)
@@ -130,52 +112,24 @@ output$plot1 <- renderPlotly({
   varNames <- names(Filter(function(x) unlist(x) %in% input$custom_var, varsDict))
 
   if(length(input$custom_var) ==  2){
+    
+    weatherdash::graph_two(
+      data = df,
+      x = "DateTime",
+      y1 = 2,
+      y2 = 3, 
+      y1_name = varNames[1], 
+      y2_name = varNames[2]
+    )
 
-    plot_ly(data = df,
-            type = "scatter",
-            mode ="lines",
-            #hovertemplate = paste('%{x}<br>%{yaxis.title.text}: %{y}<extra></extra>')
-            hoverinfo = 'text',
-            text = ~paste(DateTime, '</br></br><b>',varNames[1],': ', round(get(names(df)[2]), 2), '</br><b>', varNames[2], ': ', round(get(names(df)[3]), 2))
-    ) %>%
-      add_trace(x = ~DateTime,
-                y = ~(df)[[2]],
-                name = varNames[1],
-                line = list(color = lineGraphColour$colOne, width = 1)) %>%
-      add_trace(x = ~DateTime,
-                y = ~(df)[[3]],
-                name = varNames[2],
-                yaxis = "y2",
-                line = list(color = lineGraphColour$colTwo, width = 1)) %>%
-
-      layout(
-        xaxis = c(generalAxLayout, list(title = "")),
-        yaxis = c(generalAxLayout, list(title=paste0("<b>",varNames[1],"</b>"),titlefont = list(color = lineGraphColour$colOne))),
-        yaxis2 = c(generalAxLayout, list(titlefont = list(color = lineGraphColour$colTwo), overlaying = "y", side = "right", title = paste0("<b>",varNames[2],"</b>"))),
-        margin = marg,
-        showlegend = F,
-        plot_bgcolor = "#f5f5f5",
-        paper_bgcolor = "#f5f5f5"
-      )
   } else {
-    plot_ly(df) %>%
-      add_lines(x = ~DateTime,
-                y = ~(df)[[2]],
-                name = varNames[1],
-                line = list(color = lineGraphColour$colOne, width = 1),
-                #hovertemplate = paste('%{x}<br>%{yaxis.title.text}: %{y:.2f}<extra></extra>')
-                hoverinfo = 'text',
-                text = ~paste(DateTime, '</br></br><b>',varNames[1],': ', round(get(names(df)[2]), 2))
-      ) %>%
-      layout(
-        xaxis = c(generalAxLayout, list(title = "")),
-        yaxis = c(generalAxLayout, list(title=paste0("<b>",varNames[1],"</b>"),titlefont = list(color = lineGraphColour$colOne))),
-        margin = marg,
-        showlegend = F,
-        plot_bgcolor = "#f5f5f5",
-        paper_bgcolor = "#f5f5f5"
-      )
-
+    
+    weatherdash::graph_one(
+      data = df,
+      x = "DateTime",
+      y1 = 2,
+      y1_name = varNames[1]
+    )
   }
 
 })
@@ -184,7 +138,7 @@ output$plot1 <- renderPlotly({
 output$partnerLogoUI_custom <- renderUI({
   req(input$custom_site)
   cur_stn <- input$custom_site
-  stationMeta[[cur_stn]]['logos']
+  station_meta[[cur_stn]]['logos']
 })
 
 

@@ -38,8 +38,8 @@ annual_data_query <- reactive({
       data <- dbGetQuery(conn, query) %>%
         mutate(
           plotTime = if_else(month(DateTime) < 10,
-                             setYr(DateTime, 1901),
-                             setYr(DateTime, 1900))) %>%
+                             weatherdash::set_yr(DateTime, 1901),
+                             weatherdash::set_yr(DateTime, 1900))) %>%
           filter(WatYr > 0,
                   WatYr %in% input$compare_year)
   })

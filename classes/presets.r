@@ -2,7 +2,7 @@
 
 output$header <- renderUI({
   req(input$preset_site)
-  str1 <- paste0("<h2>", stationMeta[[input$preset_site]][1], " (", stationMeta[[input$preset_site]][2], " m)", "</h2>")
+  str1 <- paste0("<h2>", station_meta[[input$preset_site]][1], " (", station_meta[[input$preset_site]][2], " m)", "</h2>")
   if(input$preset_site == 'INSERT STATION WITH TIPPING BUCKET PROBLEM HERE'){
     HTML(paste(str1, p(tetrahedronDisclaimer, style = "color:red")))
   }
@@ -101,41 +101,25 @@ output$precipTable <- renderTable({
   }
 }, width = '100%')
 
-# plot two variables on one chart
+# plot temperature and rh for weekly summary page
+
 output$plot_T_RH <- renderPlotly({
   req(preset_data_query())
   req(input$preset_site)
-
-  df <- preset_data_query() %>%
-    select(DateTime, Air_Temp, RH)
-
-  plot_ly(data = df,
-          mode ="lines",
-          type = "scatter",
-          #hovertemplate = paste('%{x}<br>%{yaxis.title.text}: %{y}<extra></extra>') # old way with one param per box
-          hoverinfo = 'text',
-          text = ~paste(DateTime, '</br></br>', '<b>Air Temperature (&deg;C): </b>', round(Air_Temp, 2), '</br>', '<b>Relative Humidity (%): </b>',round(RH, 2))) %>%
-    add_trace(x = ~DateTime,
-              y = ~Air_Temp,
-              name = "Air Temperature (&deg;C)",
-              line = list(color = lineGraphColour$colOne, width = 1)) %>%
-    add_trace(x = ~DateTime,
-              y = ~RH,
-              name = "Relative Humidity (%)",
-              yaxis = "y2",
-              line = list(color = lineGraphColour$colTwo, width = 1)) %>%
-    layout(
-      xaxis = c(generalAxLayout, list(title = "")),
-      yaxis = c(generalAxLayout, list(title="<b>Air Temperature (&deg;C)</b>",titlefont = list(color = lineGraphColour$colOne))),
-      yaxis2 = c(generalAxLayout, list(titlefont = list(color = lineGraphColour$colTwo),overlaying = "y",side = "right",title = "<b>Relative Humidity (%)</b>")),
-      margin = marg,
-      showlegend = F,
-      plot_bgcolor = "#f5f5f5",
-      paper_bgcolor = "#f5f5f5"
-    )
-
+  
+  weatherdash::graph_two(
+    data = preset_data_query(),
+    x = 'DateTime',
+    y1 = 'Air_Temp',
+    y2 = 'RH',
+    y1_name = "Air Temperature (&deg;C)",
+    y2_name = "Relative Humidity (%)",
+    margin = marg
+)
+  
 })
 
+# plot snow and tipping bucket precip for weekly summary page
 
 output$plot_Snow <- renderPlotly({
   req(preset_data_query())
@@ -157,35 +141,30 @@ output$plot_Snow <- renderPlotly({
 
   # clean snow depth data
 if(input$cleanSnow == "yes"){
-  df <- cleanSnowData(data = df, spike_th = 10, roc_hi_th = 40, roc_low_th = 75)
-}
-
-
-  plot_ly(data = df,
-          type = "scatter",
-          mode ="lines",
-          hoverinfo = 'text',
-          text = ~paste(DateTime, '</br></br>', '<b>Snow Depth (cm): </b>', round(Snow_Depth, 2), '</br>', '<b>', precipName, '</b>',round(precip, 2))
-          #hovertemplate = paste('%{x}<br>%{yaxis.title.text}: %{y}<extra></extra>')
-  ) %>%
-    add_trace(x = ~DateTime,
-              y = ~Snow_Depth,
-              name = "Snow Depth (cm)",
-              line = list(color = lineGraphColour$colOne, width = 1)) %>%
-    add_trace(x = ~DateTime,
-              y = ~precip,
-              name = precipName,
-              yaxis = "y2",
-              line = list(color = lineGraphColour$colTwo, width = 1)) %>%
-    layout(
-      xaxis = c(generalAxLayout, list(title = "")),
-      yaxis = c(generalAxLayout, list(title="<b>Snow Depth (cm)</b>",titlefont = list(color = lineGraphColour$colOne))),
-      yaxis2 = c(generalAxLayout, list(titlefont = list(color = lineGraphColour$colTwo),overlaying = "y",side = "right",title = paste0('<b>', precipName, '</b>'))),
-      margin = marg,
-      showlegend = F,
-      plot_bgcolor = "#f5f5f5",
-      paper_bgcolor = "#f5f5f5"
-    )
+  
+  df_cln <- spike_clean(data = df, 'DateTime', 'Snow_Depth', spike_th = 10, roc_hi_th = 40, roc_low_th = 75)
+  weatherdash::graph_two(
+    data = as.data.frame(df_cln),
+    x = 'DateTime',
+    y1 = 'snow_clean',
+    y2 = 'precip',
+    y1_name = "Snow Depth (cm)",
+    y2_name = precipName,
+    margin = marg
+  )
+  
+} else{
+  weatherdash::graph_two(
+    data = df,
+    x = 'DateTime',
+    y1 = 'Snow_Depth',
+    y2 = 'precip',
+    y1_name = "Snow Depth (cm)",
+    y2_name = precipName,
+    margin = marg
+  )
+  
+  }
 })
 
 output$windplots <- renderUI({
@@ -214,19 +193,19 @@ output$plot_wind_24hr <- renderPlotly({
   req(preset_data_query())
   req(input$preset_site)
   df <- preset_data_query()
-  plotWindRose(df, hrs = 24, plotTitle = "")
+  weatherdash::wind_rose(df, 'DateTime', 'Wind_Speed', 'Wind_Dir', hrs = 24, plotTitle = "")
 })
 
 output$plot_wind_wk <- renderPlotly({
   req(preset_data_query())
   req(input$preset_site)
   df <- preset_data_query()
-  plotWindRose(df, hrs = 168)
+  weatherdash::wind_rose(df, 'DateTime', 'Wind_Speed', 'Wind_Dir', hrs = 168, plotTitle = "")
 })
 
 #### render partner logo ui ####
 output$partnerLogoUI <- renderUI({
   req(input$preset_site)
   cur_stn <- input$preset_site
-  stationMeta[[cur_stn]]['logos']
+  station_meta[[cur_stn]]['logos']
 })
