@@ -3,7 +3,7 @@
 #
 # output$header_compare_stn <- renderUI({
 #   req(input$station_site)
-#   str1 <- paste0("<h2>", stationMeta[[input$station_site]][1], " (", stationMeta[[input$station_site]][2], " m)", "</h2>")
+#   str1 <- paste0("<h2>", station_meta[[input$station_site]][1], " (", station_meta[[input$station_site]][2], " m)", "</h2>")
 #   HTML(paste(str1))
 # })
 
@@ -11,9 +11,9 @@
 observe({
   req(input$station_site)
   # need to find the year range of selected sites. finds the max of the two start years as the min.
-  yr_list <- lapply(input$station_site, function(x) stationMeta[[x]][[3]])
+  yr_list <- lapply(input$station_site, function(x) station_meta[[x]][[3]])
   min_year <- max(unlist(yr_list))
-  max_year <- wtr_yr(Sys.Date(), 10)
+  max_year <- weatherdash::wtr_yr(Sys.Date(), 10)
   year_range <- seq.int(min_year, max_year, by = 1)
   updateSelectInput(session, "station_year", "Select Water Year to Compare: ", year_range, selected = max_year)
 })
@@ -21,7 +21,7 @@ observe({
 # get intersection of variables for selected stations
 output$varSelection_stn <- renderUI({
   # get colnames from reactive dataset
-  allStnVars <- sapply(input$station_site, function(x) stationMeta[[x]][6])
+  allStnVars <- sapply(input$station_site, function(x) station_meta[[x]][6])
   intersect_vars <- Reduce(intersect, allStnVars)
   var_subset <- Filter(function(x) any(intersect_vars %in% x), varsDict)
   radioButtons(inputId = "compare_var", label = "Select one variable: ", choices = var_subset, inline = FALSE, selected = "Air_Temp")

@@ -28,7 +28,7 @@ showPopup <- function(stn_click, lat, lng, zoom) {
 
   station_name <- stnCoords$Label[stnCoords$Name == stn_click$id]
   wx_last_hr <- tags$h5("Coordinates:", round(lat, 3), "\u00B0 N, ", round(lng, 3), "\u00B0 W", tags$br(),
-                        "Elevation:", stationMeta[[stn_click$id]][2], "m", tags$br(),
+                        "Elevation:", station_meta[[stn_click$id]][2], "m", tags$br(),
                         "Last Transmission:", map_data_query()$DateTime, tags$br(), tags$br(),
                         "Temperature:", round(map_data_query()$Air_Temp, 2), "\u00B0C", tags$br(),
                         "Wind Speed (km/h): ", round(map_data_query()$Wind_Speed, 2), tags$br(),

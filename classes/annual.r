@@ -2,14 +2,14 @@
 
 output$header3 <- renderUI({
   req(input$annual_site)
-  str1 <- paste0("<h2>", stationMeta[[input$annual_site]][1], " (", stationMeta[[input$annual_site]][2], " m)", "</h2>")
+  str1 <- paste0("<h2>", station_meta[[input$annual_site]][1], " (", station_meta[[input$annual_site]][2], " m)", "</h2>")
   HTML(paste(str1))
 })
 
 # reactive element to create year list based on available years for chosen station
 observe({
   # need to find the year range of selected sites. finds the max of the two start years as the min.
-  start_years_ann <- stationMeta[[input$annual_site]][3]
+  start_years_ann <- station_meta[[input$annual_site]][3]
   min_year <- unname(unlist(lapply(start_years_ann, max)))
   max_year <- wtr_yr(Sys.Date(), 10)
   year_range <- seq.int(min_year, max_year, by = 1)
@@ -19,7 +19,7 @@ observe({
 # get available variables for selected station
 output$varSelection_ann <- renderUI({
   # get colnames from reactive dataset
-  stnVars <- unname(unlist(stationMeta[[input$annual_site]][6]))
+  stnVars <- unname(unlist(station_meta[[input$annual_site]][6]))
 
   var_subset <- Filter(function(x) any(stnVars %in% x), varsDict)
 
@@ -89,5 +89,5 @@ output$plot2 <- renderPlotly({
 output$partnerLogoUI_annCompare <- renderUI({
   req(input$annual_site)
   cur_stn <- input$annual_site
-  stationMeta[[cur_stn]]['logos']
+  station_meta[[cur_stn]]['logos']
 })
