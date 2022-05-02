@@ -1,6 +1,3 @@
-library(tidyverse)
-library(usethis)
-
 ## this is the code to create station name and variable dictionaries
 
 stnNameDict <- list(

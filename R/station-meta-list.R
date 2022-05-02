@@ -1,7 +1,3 @@
-library(tidyverse)
-library(readxl)
-library(usethis)
-
 ## this is the code to create the station_meta list used across the website
 ## for linking station metadata
 
