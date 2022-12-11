@@ -21,6 +21,11 @@ preset_data_query <- reactive({
     query <- paste0("SELECT DateTime, Air_Temp, RH, Snow_Depth, PC_Raw_Pipe, Wind_Speed, Wind_Dir FROM clean_",input$preset_site," WHERE DateTime >= '",timeStart, "'")
     data <- dbGetQuery(conn, query)
   }
+  # # specific case for tetrehedron while snow depth is out
+  # if(input$preset_site == 'tetrahedron'){
+  #   query <- paste0("SELECT DateTime, Air_Temp, RH, SWE, PP_Tipper, Wind_Speed, Wind_Dir FROM clean_",input$preset_site," WHERE DateTime >= '",timeStart, "'")
+  #   data <- dbGetQuery(conn, query)
+  # }
   else{
     query <- paste0("SELECT DateTime, Air_Temp, RH, Snow_Depth, PP_Tipper, Wind_Speed, Wind_Dir FROM clean_",input$preset_site," WHERE DateTime >= '",timeStart, "'")
     data <- dbGetQuery(conn, query)
@@ -127,22 +132,32 @@ output$plot_Snow <- renderPlotly({
 
   if(input$preset_site == 'INSERT STATION WITH TIPPING BUCKET PROBLEM HERE'){
     df <- preset_data_query() %>%
-      select(DateTime, Snow_Depth, precip = PC_Raw_Pipe) %>%
+      select(DateTime, snow = Snow_Depth, precip = PC_Raw_Pipe) %>%
       mutate(precip = ifelse(precip < 0, 0, precip))
 
     precipName <- "Total Precip (mm)"
 
   }
+  # specific case for tetrahedron while snow depth is out
+  
+  # if(input$preset_site == 'tetrahedron'){
+  #   df <- preset_data_query() %>%
+  #     select(DateTime, snow = SWE, precip = PP_Tipper) %>%
+  #     mutate(precip = ifelse(precip < 0, 0, precip))
+  #   
+  #   precipName <- "Total Precip (mm)"
+  #   
+  # }
   else {
     df <- preset_data_query() %>%
-      select(DateTime, Snow_Depth, precip = PP_Tipper)
+      select(DateTime, snow = Snow_Depth, precip = PP_Tipper)
     precipName <- "Rain (mm)"
   }
 
   # clean snow depth data
 if(input$cleanSnow == "yes"){
   
-  df_cln <- spike_clean(data = df, 'DateTime', 'Snow_Depth', spike_th = 10, roc_hi_th = 40, roc_low_th = 75)
+  df_cln <- spike_clean(data = df, 'DateTime', 'snow', spike_th = 10, roc_hi_th = 40, roc_low_th = 75)
   weatherdash::graph_two(
     data = as.data.frame(df_cln),
     x = 'DateTime',
@@ -157,7 +172,7 @@ if(input$cleanSnow == "yes"){
   weatherdash::graph_two(
     data = df,
     x = 'DateTime',
-    y1 = 'Snow_Depth',
+    y1 = 'snow',
     y2 = 'precip',
     y1_name = "Snow Depth (cm)",
     y2_name = precipName,
@@ -192,15 +207,19 @@ output$windplots <- renderUI({
 output$plot_wind_24hr <- renderPlotly({
   req(preset_data_query())
   req(input$preset_site)
-  df <- preset_data_query()
-  weatherdash::wind_rose(df, 'DateTime', 'Wind_Speed', 'Wind_Dir', hrs = 24, plotTitle = "")
+  wind_24hr <- preset_data_query() |> 
+    filter(DateTime > max(DateTime) - 60*60*24)
+    
+  weatherdash::wind_rose(wind_24hr, 'DateTime', 'Wind_Speed', 'Wind_Dir', spd_unit = 'km/h')
 })
 
 output$plot_wind_wk <- renderPlotly({
   req(preset_data_query())
   req(input$preset_site)
-  df <- preset_data_query()
-  weatherdash::wind_rose(df, 'DateTime', 'Wind_Speed', 'Wind_Dir', hrs = 168, plotTitle = "")
+  wind_1wk <- preset_data_query() |> 
+    filter(DateTime > max(DateTime) - 60*60*24*7)
+  
+  weatherdash::wind_rose(wind_1wk, 'DateTime', 'Wind_Speed', 'Wind_Dir', spd_unit = 'km/h')
 })
 
 #### render partner logo ui ####

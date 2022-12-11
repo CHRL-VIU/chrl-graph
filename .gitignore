@@ -10,3 +10,4 @@ config.r
 wx-website.Rproj
 .dcf
 rsconnect/
+credentials.md
