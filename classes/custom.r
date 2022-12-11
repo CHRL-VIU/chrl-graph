@@ -141,4 +141,17 @@ output$partnerLogoUI_custom <- renderUI({
   station_meta[[cur_stn]]['logos']
 })
 
+# create warning for down stations
+observe({
+  req(preset_data_query())
+  req(input$custom_site)
+  if(input$custom_site == 'mountcayley'){
+    showModal(modalDialog(
+      title = "Warning:",
+      paste("This station is currently offline."),
+      easyClose = T
+    ))
+  }
+})
+
 

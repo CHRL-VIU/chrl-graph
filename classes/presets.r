@@ -32,7 +32,7 @@ preset_data_query <- reactive({
   }
 })
 
-# create warning for delayed transmission
+# create warning for delayed transmission and down stations
 observe({
   req(preset_data_query())
   req(input$preset_site)
@@ -40,13 +40,24 @@ observe({
     if(length(preset_data_query()$DateTime) == 0){
       showModal(modalDialog(
         title = "Warning:",
-        paste("The last transmission was more than 7 days ago. Please checkout the custom graphs page for latest available data."),
+        paste("The last transmission was more than 7 days ago. Please see the custom graphs page for latest available data."),
         easyClose = T
       ))
-    } else if (as.integer(difftime(Sys.time() - hours(8), max(preset_data_query()$DateTime), unit = "hours")) > 1){
+    } else if (as.integer(difftime(Sys.time() - hours(8), 
+                                   max(preset_data_query()$DateTime), 
+                                   unit = "hours")) > 1){
       showModal(modalDialog(
         title = "Warning:",
-        paste("The last transmission was ", as.integer(difftime(Sys.time() - hours(8), max(preset_data_query()$DateTime), unit = "hours")), "hours ago."),
+        paste("The last transmission was ", 
+              as.integer(difftime(Sys.time() - hours(8), 
+                                  max(preset_data_query()$DateTime), 
+                                  unit = "hours")), "hours ago."),
+        easyClose = T
+      ))
+    } else if (input$preset_site == 'mountcayley'){
+      showModal(modalDialog(
+        title = "Warning:",
+        paste("This station is currently offline."),
         easyClose = T
       ))
     }
