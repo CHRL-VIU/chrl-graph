@@ -15,11 +15,15 @@ map_data_query <- reactive({
   conn <- do.call(DBI::dbConnect, args)
   on.exit(DBI::dbDisconnect(conn))
   req(input$map_marker_click)
-
+  
   # get last hour
   query <- paste0("SELECT DateTime, Air_Temp, RH, Snow_Depth, PP_Tipper, Wind_Speed, Wind_Dir FROM clean_",input$map_marker_click$id," WHERE DateTime=(select max(DateTime) from clean_",input$map_marker_click$id,");")
   data <- dbGetQuery(conn, query)
-
+  
+  if(input$map_marker_click$id == 'tetrahedron'){
+    data$Snow_Depth <- NA
+  } 
+  
   return(data)
 })
 
