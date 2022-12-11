@@ -3,7 +3,7 @@
 output$header <- renderUI({
   req(input$preset_site)
   str1 <- paste0("<h2>", station_meta[[input$preset_site]][1], " (", station_meta[[input$preset_site]][2], " m)", "</h2>")
-  if(input$preset_site == 'INSERT STATION WITH TIPPING BUCKET PROBLEM HERE'){
+  if(input$preset_site == 'mountarrowsmith'){
     HTML(paste(str1, p(tetrahedronDisclaimer, style = "color:red")))
   }
   else{HTML(paste(str1))}
@@ -17,12 +17,12 @@ preset_data_query <- reactive({
   timeStart <- ((Sys.time() - hours(8)) - days(7)) #have to control for server being in UTC and db data stored as UTC even though is acutally PST
   conn <- do.call(DBI::dbConnect, args)
   on.exit(DBI::dbDisconnect(conn))
-  if(input$preset_site == 'INSERT STATION WITH TIPPING BUCKET PROBLEM HERE'){
+  if(input$preset_site == 'mountarrowsmith'){
     query <- paste0("SELECT DateTime, Air_Temp, RH, Snow_Depth, PC_Raw_Pipe, Wind_Speed, Wind_Dir FROM clean_",input$preset_site," WHERE DateTime >= '",timeStart, "'")
     data <- dbGetQuery(conn, query)
   }
   # specific case for tetrehedron while snow depth is out
-  if(input$preset_site == 'tetrahedron'){
+  else if(input$preset_site == 'tetrahedron'){
     query <- paste0("SELECT DateTime, Air_Temp, RH, SWE, PP_Tipper, Wind_Speed, Wind_Dir FROM clean_",input$preset_site," WHERE DateTime >= '",timeStart, "'")
     data <- dbGetQuery(conn, query)
   }
@@ -70,7 +70,7 @@ observe({
 output$precipTable <- renderTable({
   req(preset_data_query())
   req(input$preset_site)
-  if(input$preset_site == 'INSERT STATION WITH TIPPING BUCKET PROBLEM HERE'){
+  if(input$preset_site == 'mountarrowsmith'){
     # no rain at tett so have to disable table - precip total too erroneous to show
 
     precipSummary <- NULL
@@ -140,8 +140,8 @@ output$plot_T_RH <- renderPlotly({
 output$plot_Snow <- renderPlotly({
   req(preset_data_query())
   req(input$preset_site)
-
-  if(input$preset_site == 'INSERT STATION WITH TIPPING BUCKET PROBLEM HERE'){
+  
+  if(input$preset_site == 'mountarrowsmith'){
     df <- preset_data_query() %>%
       select(DateTime, snow = Snow_Depth, precip = PC_Raw_Pipe) %>%
       mutate(precip = ifelse(precip < 0, 0, precip))
@@ -152,7 +152,7 @@ output$plot_Snow <- renderPlotly({
   }
   # specific case for tetrahedron while snow depth is out
   
-  if(input$preset_site == 'tetrahedron'){
+  else if(input$preset_site == 'tetrahedron'){
     df <- preset_data_query() %>%
       select(DateTime, snow = SWE, precip = PP_Tipper) %>%
       mutate(precip = ifelse(precip < 0, 0, precip))

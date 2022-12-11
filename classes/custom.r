@@ -3,7 +3,10 @@
 output$header2 <- renderUI({
   req(input$custom_site)
   str1 <- paste0("<h2>", station_meta[[input$custom_site]][1], " (", station_meta[[input$custom_site]][2], " m)", "</h2>")
-  HTML(paste(str1))
+  if(input$custom_site == 'mountarrowsmith'){
+    HTML(paste(str1, p('The tipping bucket is currently malfunctioning at this station please refer to total precipitation (precip pipe) instead.', style = "color:red")))
+  }
+  else{HTML(paste(str1))}
 })
 
 
@@ -145,13 +148,16 @@ output$partnerLogoUI_custom <- renderUI({
 observe({
   req(preset_data_query())
   req(input$custom_site)
-  if(input$custom_site == 'mountcayley'){
-    showModal(modalDialog(
-      title = "Warning:",
-      paste("This station is currently offline."),
-      easyClose = T
-    ))
+  if(input$smenu == "cstm_graph"){
+    if(input$custom_site == 'mountcayley'){
+      showModal(modalDialog(
+        title = "Warning:",
+        paste("This station is currently offline."),
+        easyClose = T
+      ))
+    }
   }
-})
+}
+)
 
 

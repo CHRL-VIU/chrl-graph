@@ -23,7 +23,7 @@ cur_stn = "apelake"
 
 # add message to display at top of graph pages
 siteNoticeMsg <- "Note: To automatically load your favourite station when you visit our site, select a station from the 'Choose a Weather Station' dropdown and then bookmark the link in the address bar. <br/>"
-tetrahedronDisclaimer <- "The tipping bucket is currently offline at this station and total precipitation (stand pipe) is shown instead."
+tetrahedronDisclaimer <- "The tipping bucket is currently malfunctioning at this station and total precipitation (stand pipe) is shown instead."
 
 # load graphing presets
 source('R/graph-presets.R')
