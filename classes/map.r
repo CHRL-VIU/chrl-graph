@@ -29,7 +29,6 @@ map_data_query <- reactive({
 
 # Show a popup at the given location
 showPopup <- function(stn_click, lat, lng, zoom) {
-
   station_name <- stnCoords$Label[stnCoords$Name == stn_click$id]
   wx_last_hr <- tags$h5("Coordinates:", round(lat, 3), "\u00B0 N, ", round(lng, 3), "\u00B0 W", tags$br(),
                         "Elevation:", station_meta[[stn_click$id]][2], "m", tags$br(),
@@ -41,14 +40,31 @@ showPopup <- function(stn_click, lat, lng, zoom) {
   graph_icon <- tags$a(href= paste0("?_inputs_&preset_site=%22",stn_click$id,"%22&custom_site=%22apelake%22&smenu=%22wkly_graph%22"), target="_blank", icon("fas fa-chart-line", "fa-2x"))
   pic_icon <- tags$a(href= paste0("http://viu-hydromet-wx.ca/wx_station_images_reduced/", stn_click$id,".png"), target="_blank", icon("fas fa-camera", "fa-2x"), style="float: right;")
 
-    if(length(data) == 0){
+    if(length(map_data_query()) == 0){
       content <- as.character(tagList(
         tags$h3(station_name),
         tags$h5("Station is offline.", style = "color:red"),
         graph_icon,
         pic_icon))
     }
-    if(difftime(Sys.time(), max(map_data_query()$DateTime)) > hours(48)){
+  # else if(stn_click$id == 'mountcayley'){
+  #   content <- as.character(tagList(
+  #     tags$h3(station_name),
+  #     tags$h5("Station is offline.", style = "color:red"),
+  #     graph_icon,
+  #     pic_icon))
+  # }
+  else if(map_data_query()$Air_Temp +
+          map_data_query()$RH +
+          map_data_query()$Snow_Depth +
+          map_data_query()$PP_Tipper == 0){
+    content <- as.character(tagList(
+      tags$h3(station_name),
+      tags$h5("Station is offline.", style = "color:red"),
+      graph_icon,
+      pic_icon))
+  }
+    else if(difftime(Sys.time(), max(map_data_query()$DateTime)) > hours(48)){
       content <- as.character(tagList(
         tags$h3(station_name),
         tags$h5("WARNING: This transmission is more than 48 hours old.", style = "color:red"),
