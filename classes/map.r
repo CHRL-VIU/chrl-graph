@@ -20,10 +20,6 @@ map_data_query <- reactive({
   query <- paste0("SELECT DateTime, Air_Temp, RH, Snow_Depth, PP_Tipper, Wind_Speed, Wind_Dir FROM clean_",input$map_marker_click$id," WHERE DateTime=(select max(DateTime) from clean_",input$map_marker_click$id,");")
   data <- dbGetQuery(conn, query)
   
-  if(input$map_marker_click$id == 'tetrahedron'){
-    data$Snow_Depth <- NA
-  } 
-  
   return(data)
 })
 
@@ -55,9 +51,7 @@ showPopup <- function(stn_click, lat, lng, zoom) {
   #     pic_icon))
   # }
   else if(map_data_query()$Air_Temp +
-          map_data_query()$RH +
-          map_data_query()$Snow_Depth +
-          map_data_query()$PP_Tipper == 0){
+          map_data_query()$RH == 0){
     content <- as.character(tagList(
       tags$h3(station_name),
       tags$h5("Station is offline.", style = "color:red"),
