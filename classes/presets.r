@@ -54,7 +54,7 @@ observe({
                                   unit = "hours")), "hours ago."),
         easyClose = T
       ))
-    } else if (input$preset_site == 'mountcayley'){
+    } else if (input$preset_site %in% down_stations){
       showModal(modalDialog(
         title = "Warning:",
         paste("This station is currently offline."),

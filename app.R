@@ -14,12 +14,15 @@ Sys.setenv(TZ = 'UTC')
 # grab login creds
 source("config.r")
 
+# set the down stations to show a popup model for
+
+down_stations <- NA
+
 # Station Coords
 stnCoords <- read.csv("stnloc.csv")
 
 # set initial staiton
 cur_stn = "apelake"
-
 
 # add message to display at top of graph pages
 siteNoticeMsg <- "Note: To automatically load your favourite station when you visit our site, select a station from the 'Choose a Weather Station' dropdown and then bookmark the link in the address bar. <br/>"

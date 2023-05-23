@@ -149,7 +149,7 @@ observe({
   req(preset_data_query())
   req(input$custom_site)
   if(input$smenu == "cstm_graph"){
-    if(input$custom_site == 'mountcayley'){
+    if(input$custom_site %in% down_stations){
       showModal(modalDialog(
         title = "Warning:",
         paste("This station is currently offline."),
