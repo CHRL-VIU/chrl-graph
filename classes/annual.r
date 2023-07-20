@@ -65,6 +65,7 @@ output$plot2 <- renderPlotly({
             y = ~df[,3],
             text = ~DateTime, # bring in datetime with year for hover text
             color = as.factor(df$WatYr),
+            colors = cbs_pal,
             type = "scatter",
             mode = "lines",
             hovertemplate = paste('<b>%{text}</b><br>%{yaxis.title.text}: %{y}<extra></extra>')

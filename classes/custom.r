@@ -3,7 +3,7 @@
 output$header2 <- renderUI({
   req(input$custom_site)
   str1 <- paste0("<h2>", station_meta[[input$custom_site]][1], " (", station_meta[[input$custom_site]][2], " m)", "</h2>")
-  if(input$custom_site == 'mountarrowsmith'){
+  if(input$custom_site %in% list_stn_tipping_bucket_errs){
     HTML(paste(str1, p('The tipping bucket is currently malfunctioning at this station please refer to total precipitation (precip pipe) instead.', style = "color:red")))
   }
   else{HTML(paste(str1))}

@@ -3,7 +3,7 @@
 output$header <- renderUI({
   req(input$preset_site)
   str1 <- paste0("<h2>", station_meta[[input$preset_site]][1], " (", station_meta[[input$preset_site]][2], " m)", "</h2>")
-  if(input$preset_site == 'mountarrowsmith'){
+  if(input$preset_site %in% list_stn_tipping_bucket_errs){
     HTML(paste(str1, p(tetrahedronDisclaimer, style = "color:red")))
   }
   else{HTML(paste(str1))}

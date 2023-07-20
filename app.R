@@ -11,8 +11,24 @@ library(weatherdash)
 
 Sys.setenv(TZ = 'UTC')
 
+# set colorblind safe color pallet 
+# http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette
+
+cbs_pal <-
+  c(
+    "#000000",
+    "#E69F00",
+    "#009E73",
+    "#F0E442",
+    "#CC79A7",
+    "#56B4E9"
+  )
+
 # grab login creds
 source("config.r")
+
+# set list of stns with tipping bucket problems 
+list_stn_tipping_bucket_errs <- 'mountarrowsmith'
 
 # set the down stations to show a popup model for
 

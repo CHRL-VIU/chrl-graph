@@ -63,6 +63,7 @@ output$plot_compare_stn <- renderPlotly({
           y = ~df[,3],
           text = ~DateTime, # bring in datetime with year for hover text
           color = as.factor(df$station),
+          colors = cbs_pal,
           type = "scatter",
           mode = "lines",
           hovertemplate = paste('<b>%{text}</b><br>%{yaxis.title.text}: %{y}<extra></extra>')
