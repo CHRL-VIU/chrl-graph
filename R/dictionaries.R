@@ -1,5 +1,4 @@
 ## this is the code to create station name and variable dictionaries
-
 stnNameDict <- list(
   "Upper Skeena" = "upperskeena",
   "Datlamen Pass" = "datlamen",
@@ -15,7 +14,15 @@ stnNameDict <- list(
   "Homathko" = "homathko",
   "Cain Ridge Run" = "cainridgerun",
   "Cain Lower" = "lowercain",
+  "Stephanie 1" = "steph1",
+  "Stephanie 2" = "steph2",
   "Stephanie 3" = "steph3",
+  "Stephanie 4" = "steph4",
+  "Stephanie 6" = "steph6",
+  "Stephanie 7" = "steph7",
+  "Stephanie 8" = "steph8",
+  "Stephanie 9" = "steph9",
+  "Stephanie 10" = "steph10",
   "Upper Cruickshank" = "uppercruickshank",
   "Perseverance" = "perseverance",
   "Mount Arrowsmith" = "mountarrowsmith",
@@ -49,7 +56,7 @@ varsDict <- list("DateTime" = "DateTime",
 
 # imgs should be saved under the www/ folder
 logoPics <- list(
-  bcgov_logo = tags$a(href='https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries/forests-lands-natural-resource-operations-and-rural-development', tags$img(src="bcgov.png", height = "90", width = "250", hspace = "10", vspace = "10")),
+  bcgov_logo = tags$a(href='https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries/forests', tags$img(src="bcgov.png", height = "90", width = "250", hspace = "10", vspace = "10")),
   bcenv_logo = tags$a(href='https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/water-science-data/water-data-tools/snow-survey-data/automated-snow-weather-stations', tags$img(src="bcenv.jpg", height = "130", width = "140", hspace = "10", vspace = "10")),
   viu_logo = tags$a(href='https://www.viu.ca/', tags$img(src="viu.png", height = "80", width = "100", hspace = "10", vspace = "10")),
   canada_logo = tags$a(href='https://www.canada.ca/en/environment-climate-change.html', tags$img(src="envcan.jpg", height = "65", width = "225", hspace = "10", vspace = "10")),
