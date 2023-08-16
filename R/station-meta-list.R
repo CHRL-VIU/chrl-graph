@@ -195,7 +195,7 @@ station_meta = list(
                      startYear = 2015,
                      lat = 50.070919,
                      lon = -123.277469,
-                     params = c("Air_Temp", "RH", "BP", "Wind_Speed", "Wind_Dir", "Pk_Wind_Speed", "Pk_Wind_Dir", "PC_Tipper", "PP_Tipper", "Snow_Depth", "Solar_Rad", "Soil_Moisture", "Batt"),
+                     params = c("Air_Temp", "RH", "BP", "Wind_Speed", "Wind_Dir", "Pk_Wind_Speed", "Pk_Wind_Dir", "PC_Tipper", "PP_Tipper", "Snow_Depth", "Solar_Rad", "Soil_Moisture","Soil_Temperature", "Batt"),
                      logos = column(12, align = "center", style='padding:0px;',
 
                                     logoPics$bcgov_logo,
@@ -336,7 +336,7 @@ station_meta = list(
                                logoPics$canada_logo,
                                logoPics$bcts_logo)),
 
-  steph9 = list(name = "Stephanie 9",
+  upperrussell = list(name = "Upper Russell",
                 elevation = 493,
                 startYear = 2016,
                 lat = 50.3447,
@@ -349,7 +349,7 @@ station_meta = list(
                                logoPics$canada_logo,
                                logoPics$bcts_logo)),
 
-  steph10 = list(name = "Stephanie 10",
+  russellmain = list(name = "Russell Main",
                 elevation = 280,
                 startYear = 2009,
                 lat = 50.3251,
