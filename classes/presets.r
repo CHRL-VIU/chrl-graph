@@ -158,7 +158,7 @@ output$plot_Snow <- renderPlotly({
       mutate(precip = ifelse(precip < 0, 0, precip))
     
     precipName <- "Rain (mm)"
-    snowName <- "Snow Water Equivilent (mm)"
+    snowName <- "Snow Water Equivalent (mm)"
     
   }
   else {
