@@ -70,7 +70,7 @@ ui <- function(request) {
                               menuItem("Custom Graphs", tabName = "cstm_graph", icon = icon("fas fa-chart-line")),
                               menuItem("Annual Comparisons", tabName = "ann_compare", icon = icon("fas fa-chart-line")),
                               menuItem("Station Comparisons", tabName = "stn_compare", icon = icon("fas fa-chart-line")),
-                              menuItem("Webcams", icon = icon("fas fa-camera"), href = "http://viu-hydromet-wx.ca/webcam-viewer/")
+                              menuItem("Webcams", icon = icon("fas fa-camera"), href = "https://viu-hydromet-wx.ca/webcam-viewer/")
                   )
                 ),
                 
