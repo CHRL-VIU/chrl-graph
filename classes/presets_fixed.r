@@ -21,6 +21,7 @@ preset_data_query <- reactive({
     query <- paste0("SELECT DateTime, Air_Temp, RH, Snow_Depth, PC_Raw_Pipe, Wind_Speed, Wind_Dir FROM clean_",input$preset_site," WHERE DateTime >= '",timeStart, "'")
     data <- dbGetQuery(conn, query)
   }
+
   else{
     query <- paste0("SELECT DateTime, Air_Temp, RH, Snow_Depth, PP_Tipper, Wind_Speed, Wind_Dir FROM clean_",input$preset_site," WHERE DateTime >= '",timeStart, "'")
     data <- dbGetQuery(conn, query)
