@@ -21,11 +21,7 @@ preset_data_query <- reactive({
     query <- paste0("SELECT DateTime, Air_Temp, RH, Snow_Depth, PC_Raw_Pipe, Wind_Speed, Wind_Dir FROM clean_",input$preset_site," WHERE DateTime >= '",timeStart, "'")
     data <- dbGetQuery(conn, query)
   }
-  # specific case for tetrehedron while snow depth is out
-  else if(input$preset_site == 'tetrahedron'){
-    query <- paste0("SELECT DateTime, Air_Temp, RH, SWE, PP_Tipper, Wind_Speed, Wind_Dir FROM clean_",input$preset_site," WHERE DateTime >= '",timeStart, "'")
-    data <- dbGetQuery(conn, query)
-  }
+
   else{
     query <- paste0("SELECT DateTime, Air_Temp, RH, Snow_Depth, PP_Tipper, Wind_Speed, Wind_Dir FROM clean_",input$preset_site," WHERE DateTime >= '",timeStart, "'")
     data <- dbGetQuery(conn, query)
@@ -150,17 +146,7 @@ output$plot_Snow <- renderPlotly({
     snowName <- "Snow Depth (cm)"
 
   }
-  # specific case for tetrahedron while snow depth is out
-  
-  else if(input$preset_site == 'tetrahedron'){
-    df <- preset_data_query() %>%
-      select(DateTime, snow = SWE, precip = PP_Tipper) %>%
-      mutate(precip = ifelse(precip < 0, 0, precip))
-    
-    precipName <- "Rain (mm)"
-    snowName <- "Snow Water Equivilent (mm)"
-    
-  }
+
   else {
     df <- preset_data_query() %>%
       select(DateTime, snow = Snow_Depth, precip = PP_Tipper)
