@@ -105,7 +105,7 @@ station_meta = list(
 
   eastbuxton = list(name = "Buxton East Ridge",
                     elevation = 738,
-                    startYear = 2017,
+                    startYear = 2014,
                     lat = 51.59,
                     lon = -127.957,
                     params = c(
