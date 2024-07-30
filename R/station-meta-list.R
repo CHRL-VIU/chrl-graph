@@ -712,6 +712,7 @@ station_meta = list(
                                     
                                     logoPics$viu_logo,
                                     logoPics$bcgov_logo,
-                                    logoPics$bcenv_logo))
+                                    logoPics$hakai_logo,
+                                    logoPics$unbc_logo,))
 )
 
