@@ -686,5 +686,32 @@ station_meta = list(
                                     logoPics$CIRNAC_logo,
                                     logoPics$viu_logo,
                                     logoPics$bcgov_logo,
+                                    logoPics$bcenv_logo)),
+  placeglacier = list(name = "Place Glacier",
+                     elevation = 2306,
+                     startYear = 2024,
+                     lat = 50.420312,
+                     lon = -122.614420,
+                     params = c("Air_Temp",
+                                "RH",
+                                "BP",
+                                "Wind_Speed",
+                                "Wind_Dir",
+                                "Pk_Wind_Speed",
+                                "Pk_Wind_Dir",
+                                "PC_Tipper",
+                                "PP_Tipper",
+                                "Snow_Depth",
+                                "SWU",
+                                "SWL",
+                                "LWU",
+                                "LWL",
+                                "Batt"
+                                ),                     
+                     logos = column(12, align = "center", style='padding:0px;',
+                                    
+                                    logoPics$viu_logo,
+                                    logoPics$bcgov_logo,
                                     logoPics$bcenv_logo))
 )
+
