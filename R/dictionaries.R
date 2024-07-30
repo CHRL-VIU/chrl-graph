@@ -27,6 +27,7 @@ stnNameDict <- list(
   "Perseverance" = "perseverance",
   "Mount Arrowsmith" = "mountarrowsmith",
   "Mount Cayley" = "mountcayley",
+  "Place Glacier" = "placeglacier",
   "Tetrahedron" = "tetrahedron"
 )
 
