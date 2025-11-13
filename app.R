@@ -1,4 +1,6 @@
-library(dplyr)
+nanolibrary(dplyr)
+.libPaths(c("/usr/local/lib/R/site-library", .libPaths())) # these lines fixed issues setting up app on new server
+library(RMariaDB)                                          # these lines fixed issues setting up app on new server
 library(DBI)
 library(plotly)
 library(lubridate)
