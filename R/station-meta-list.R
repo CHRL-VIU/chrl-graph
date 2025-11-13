@@ -251,9 +251,8 @@ station_meta = list(
                                     "Wind_Dir",
                                     "Pk_Wind_Speed",
                                     "Pk_Wind_Dir",
-                                    # tipping bucket malfunctioning since 2022
-                                    # "PC_Tipper",
-                                    # "PP_Tipper",
+                                    "PC_Tipper",
+                                    "PP_Tipper",
                                     "PC_Raw_Pipe",
                                     "Snow_Depth",
                                     "SWU",
