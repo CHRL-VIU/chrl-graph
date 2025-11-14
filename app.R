@@ -30,7 +30,8 @@ cbs_pal <-
 source("config.r")
 
 # set list of stns with tipping bucket problems 
-list_stn_tipping_bucket_errs <- 'mountarrowsmith'
+# list_stn_tipping_bucket_errs <- 'mountarrowsmith'  #arrowsmith fixed Sep2025 but kept here (commented out) as an example
+list_stn_tipping_bucket_errs <- character(0) # no tipping bucket issues
 
 # set the down stations to show a popup model for
 
