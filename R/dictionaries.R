@@ -33,6 +33,7 @@ stnNameDict <- list(
 
 varsDict <- list("DateTime" = "DateTime",
                  "Air Temperature (\u00b0C)" = "Air_Temp",
+                 "Air Temperature Alt (\u00b0C)" = "Air_Temp_2",
                  "Relative Humidity (%)" = "RH",
                  "Air Pressure (kPa)" = "BP",
                  "Wind Speed (km/h)" = "Wind_Speed",
@@ -41,9 +42,10 @@ varsDict <- list("DateTime" = "DateTime",
                  "Peak Wind Direction (deg)" = "Pk_Wind_Dir",
                  "Tipping Bucket Increment (mm)" = "PP_Tipper",
                  "Tipping Bucket Cumulative (mm)" = "PC_Tipper",
-                 "Precip Pipe Raw (mm)" = "PC_Raw_Pipe",
-                 "Precip Pipe Increment (mm)" = "PP_Pipe",
+                 "Stand Pipe Raw (mm)" = "PC_Raw_Pipe",
+                 "Stand Pipe Increment (mm)" = "PP_Pipe",
                  "Snow Depth (cm)" =  "Snow_Depth",
+                 "Snow Depth Alt (cm)" = "Snow_Depth_2",
                  "Snow Water Equivalent (mm)" = "SWE",
                  "Solar Radiation (W/m2)" = "Solar_Rad",
                  "Short Wave Radiation Upper (W/m2)" = "SWU",
@@ -53,8 +55,46 @@ varsDict <- list("DateTime" = "DateTime",
                  "Lysimeter (mm)" = "Lysimeter",
                  "Soil Moisture (%)" = "Soil_Moisture",
                  "Soil Temperature (\u00b0C)" = "Soil_Temperature",
-                 "Battery (V)" = "Batt"
+                 "Battery (V)" = "Batt")
+
+preset_vars <- c(
+  "Air Temperature (°C)" = "Air_Temp",
+  "Relative Humidity (%)" = "RH",
+  "Snow Depth (cm)" = "Snow_Depth",
+  "Tipping Bucket Increment (mm)" = "PP_Tipper",
+  "Stand Pipe Raw (mm)" = "PC_Raw_Pipe",
+  "Wind Speed (km/h)" = "Wind_Speed",
+  "Wind Direction (deg)" = "Wind_Dir"
 )
+
+# Station-specific overrides to vars lists
+station_vars_override <- list(
+  plummerhut = list(
+    "Air Temperature (°C)" = "Air_Temp_2",
+    "Air Temperature Alt (°C)" = "Air_Temp",
+    "Snow Depth (cm)" = "Snow_Depth_2",
+    "Snow Depth Alt (cm)" = "Snow_Depth"
+  ),
+  placeglacier = list(
+    "Air Temperature (°C)" = "Air_Temp_2",
+    "Air Temperature Alt (°C)" = "Air_Temp",
+    "Snow Depth (cm)" = "Snow_Depth_2",
+    "Snow Depth Alt (cm)" = "Snow_Depth"
+  )
+)
+
+get_db_vars <- function(site, labels) {
+  # Keep names so we can apply overrides
+  base <- varsDict[labels]  # keep names
+  
+  if (!is.null(station_vars_override[[site]])) {
+    overrides <- station_vars_override[[site]]
+    # replace values for labels that have an override
+    base[names(base) %in% names(overrides)] <- overrides[names(base)[names(base) %in% names(overrides)]]
+  }
+  
+  return(unname(base))  # return just the SQL columns
+}
 
 # imgs should be saved under the www/ folder
 logoPics <- list(
