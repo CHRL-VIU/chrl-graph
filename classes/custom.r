@@ -1,163 +1,260 @@
 #### custom graphs ####
 
+# ---------- Header ----------
 output$header2 <- renderUI({
   req(input$custom_site)
-  str1 <- paste0("<h2>", station_meta[[input$custom_site]][1], " (", station_meta[[input$custom_site]][2], " m)", "</h2>")
-  if(input$custom_site %in% list_stn_tipping_bucket_errs){
-    HTML(paste(str1, p('The tipping bucket is currently malfunctioning at this station please refer to total precipitation (precip pipe) instead.', style = "color:red")))
+  
+  str1 <- paste0(
+    "<h2>",
+    station_meta[[input$custom_site]][1],
+    " (",
+    station_meta[[input$custom_site]][2],
+    " m)</h2>"
+  )
+  
+  if (input$custom_site %in% list_stn_tipping_bucket_errs) {
+    HTML(paste(
+      str1,
+      p(
+        "The tipping bucket is currently malfunctioning at this station; please refer to total precipitation (stand pipe) instead.",
+        style = "color:red"
+      )
+    ))
+  } else {
+    HTML(str1)
   }
-  else{HTML(paste(str1))}
 })
 
-
-
-# pull data from mysql db based on user station and year input
-custom_data_query <- reactive({
-  req(input$custom_site)
-  req(input$custom_year)
-
-  conn <- do.call(DBI::dbConnect, args)
-  on.exit(DBI::dbDisconnect(conn))
-  query <- paste0("SELECT * FROM clean_", input$custom_site,  " where WatYr = ", input$custom_year, ";")
-  data <- dbGetQuery(conn, query)
-
-})
-
-# reactive element to create year list based on available years for chosen station
+# ---------- Year Selector ----------
 observe({
-  # need to find the year range of selected sites. finds the max of the two start years as the min.
+  req(input$custom_site)
+  
   start_years <- station_meta[[input$custom_site]][3]
   min_year <- unname(unlist(lapply(start_years, max)))
-  max_year <- weatherdash::wtr_yr(Sys.Date(), 10) # return current water year.
-  year_range <- seq.int(min_year, max_year, by = 1)
-  updateSelectInput(session, "custom_year", "Select Water Year:", year_range, selected = max_year)
+  max_year <- weatherdash::wtr_yr(Sys.Date(), 10)
+  
+  updateSelectInput(
+    session,
+    "custom_year",
+    "Select Water Year:",
+    seq.int(min_year, max_year),
+    selected = max_year
+  )
 })
 
-# get available variables for selected station
+# ---------- Variable Selection ----------
 output$varSelection <- renderUI({
-  # get colnames from reactive dataset
+  req(input$custom_site)
+  
   stnVars <- unname(unlist(station_meta[[input$custom_site]][6]))
-
-  var_subset <- Filter(function(x) any(stnVars %in% x), varsDict)
-
-  checkboxGroupInput(inputId = "custom_var", label = "Select one or two variables:", choices = var_subset, inline = FALSE, selected = "Air_Temp")
+  
+  var_subset <- Filter(
+    function(x) any(stnVars %in% x),
+    varsDict
+  )
+  
+  checkboxGroupInput(
+    inputId = "custom_var",
+    label = "Select Variables:",
+    choices = names(var_subset),
+    inline = FALSE,
+    selected = intersect(
+      c("Air Temperature (°C)"),
+      names(var_subset)
+    )
+  )
 })
 
+# ---------- Snow Depth Cleaning Button ----------
 output$cleanSnowButton <- renderUI({
   req(input$custom_var)
-  if("Snow_Depth" %in% input$custom_var){
-    radioButtons("cleanSnowCstm", "Preform automated spike correction on Snow Depth?:", inline = T,
-                 c("Yes" = "yes",
-                   "No" = "no"),
-                 selected = "no"
+  
+  if ("Snow Depth (cm)" %in% input$custom_var) {
+    radioButtons(
+      "cleanSnowCstm",
+      "Perform automated spike correction on Snow Depth?",
+      inline = TRUE,
+      choices = c("Yes" = "yes", "No" = "no"),
+      selected = "no"
     )
   }
-
 })
 
-# ensure only two variables are selected
-observe({
-  if(length(input$custom_var) > 2){
-    updateCheckboxGroupInput(session, "custom_var", selected = tail(input$custom_var, 2))
-  }
-})
-
+# ---------- Slider ----------
 output$slider <- renderUI({
-  req(custom_data_query())
-  sliderInput(inputId = "sliderTimeRange", label = "",
-              min = min(custom_data_query()$DateTime),
-              max = max(custom_data_query()$DateTime),
-              value = c(min(custom_data_query()$DateTime),
-                        max(custom_data_query()$DateTime)),
-              step = 3600,
-              width = '85%',
-              height )
-})
-
-#filter preset data query
-customDataFilter <-  reactive({
-  req(input$sliderTimeRange)
-  df <- custom_data_query()
-  df %>%  filter(DateTime >= input$sliderTimeRange[1] & DateTime <= input$sliderTimeRange[2])
-})
-
-# final data set
-
-finalData <- reactive({
-  req(customDataFilter())
-  req(input$custom_var)
-
-  df <- customDataFilter()
-
-  if("Snow_Depth" %in% input$custom_var) {
-    req(input$cleanSnowCstm)
-    if(input$cleanSnowCstm == "yes"){
-      flag  <- ("Snow_Depth" %in% input$custom_var)
-      clean <- input$cleanSnow
-      df <- spike_clean(data = df, 'DateTime', 'Snow_Depth', spike_th = 10, roc_hi_th = 40, roc_low_th = 75)
-    }
-    else{return(df)}
-  }
-  return(df)
-})
-
-
-# plot for custom graphs page
-output$plot1 <- renderPlotly({
-  req(input$custom_site)
-  req(input$custom_year)
-  req(input$custom_var)
-  req(finalData())
-
-  df <- finalData() %>%
-    select(DateTime, input$custom_var)
-
-  varNames <- names(Filter(function(x) unlist(x) %in% input$custom_var, varsDict))
-
-  if(length(input$custom_var) ==  2){
-    
-    weatherdash::graph_two(
-      data = df,
-      x = "DateTime",
-      y1 = 2,
-      y2 = 3, 
-      y1_name = varNames[1], 
-      y2_name = varNames[2]
-    )
-
+  req(input$custom_site, input$custom_year)
+  
+  conn <- do.call(DBI::dbConnect, args)
+  on.exit(DBI::dbDisconnect(conn))
+  
+  # CRUICK HOTFIX
+  table_name <- if (
+    input$custom_site == "uppercruickshank" &&
+    !is.null(input$custom_var) &&
+    "Snow Water Equivalent (mm)" %in% input$custom_var
+  ) {
+    paste0("qaqc_", input$custom_site)
   } else {
-    
-    weatherdash::graph_one(
-      data = df,
-      x = "DateTime",
-      y1 = 2,
-      y1_name = varNames[1]
-    )
+    paste0("clean_", input$custom_site)
   }
-
+  
+  query <- paste0(
+    "SELECT DateTime FROM ",
+    table_name,
+    " WHERE WatYr = ",
+    input$custom_year,
+    ";"
+  )
+  
+  df <- dbGetQuery(conn, query)
+  validate(need(nrow(df) > 0, "No data available for this year."))
+  
+  sliderInput(
+    inputId = "sliderTimeRange",
+    label = "",
+    min = min(df$DateTime),
+    max = max(df$DateTime),
+    value = c(min(df$DateTime), max(df$DateTime)),
+    step = 3600,
+    width = "85%"
+  )
 })
 
-#### render partner logo ui ####
+# ---------- Filtered Clean Data ----------
+customDataFilter <- reactive({
+  req(input$custom_site, input$custom_year, input$sliderTimeRange)
+  
+  conn <- do.call(DBI::dbConnect, args)
+  on.exit(DBI::dbDisconnect(conn))
+  
+  # CRUICK HOTFIX
+  table_name <- if (
+    input$custom_site == "uppercruickshank" &&
+    !is.null(input$custom_var) &&
+    "Snow Water Equivalent (mm)" %in% input$custom_var
+  ) {
+    paste0("qaqc_", input$custom_site)
+  } else {
+    paste0("clean_", input$custom_site)
+  }
+  
+  query <- paste0(
+    "SELECT * FROM ",
+    table_name,
+    " WHERE WatYr = ",
+    input$custom_year,
+    ";"
+  )
+  
+  df <- dbGetQuery(conn, query)
+  
+  df %>%
+    dplyr::filter(
+      DateTime >= input$sliderTimeRange[1],
+      DateTime <= input$sliderTimeRange[2]
+    )
+})
+
+# ---------- Final Data (Dictionary Overrides Applied Here) ----------
+final_custom_data <- reactive({
+  req(customDataFilter(), input$custom_var)
+  
+  df <- customDataFilter()
+  
+  # resolve SQL column names using dictionaries.R
+  sql_cols <- unlist(get_db_vars(input$custom_site, input$custom_var))
+  
+  df <- df %>%
+    dplyr::select(DateTime, dplyr::any_of(sql_cols))
+  
+  # optional snow depth spike cleaning
+  if (
+    "Snow Depth (cm)" %in% input$custom_var &&
+    !is.null(input$cleanSnowCstm) &&
+    input$cleanSnowCstm == "yes"
+  ) {
+    snow_col <- sql_cols[input$custom_var == "Snow Depth (cm)"]
+    
+    if (length(snow_col) == 1 && snow_col %in% names(df)) {
+      df <- spike_clean(
+        data = df,
+        x = "DateTime",
+        y = snow_col,
+        spike_th = 10,
+        roc_hi_th = 40,
+        roc_low_th = 75
+      )
+    }
+  }
+  
+  df
+})
+
+# ---------- Plot ----------
+output$plot1 <- renderPlotly({
+  req(final_custom_data(), input$custom_var)
+  
+  df <- final_custom_data()
+  cols_to_plot <- setdiff(names(df), "DateTime")
+  validate(need(length(cols_to_plot) > 0, "No variables selected."))
+  
+  # Map SQL cols -> display names
+  var_map <- varsDict
+  if(input$custom_site %in% c("plummerhut", "placeglacier")){
+    var_map[["Air Temperature (\u00b0C)"]] <- "Air_Temp_2"
+    var_map[["Air Temperature Alt (\u00b0C)"]] <- "Air_Temp"
+    var_map[["Snow Depth (cm)"]] <-  "Snow_Depth_2"
+    var_map[["Snow Depth Alt (cm)"]] <- "Snow_Depth"
+  }
+  label_map <- setNames(names(var_map), unlist(var_map)) # SQL col -> label
+  
+  # Build one Plotly trace per variable
+  plots <- lapply(cols_to_plot, function(col){
+    plot_ly(df, x = ~DateTime, y = as.formula(paste0("~`", col, "`")),
+            type = 'scatter', mode = 'lines', name = label_map[col])
+  })
+  
+  # Combine vertically with shared X-axis
+  subplot(plots, nrows = length(plots), shareX = TRUE, titleY = TRUE) %>%
+    layout(
+      plot_bgcolor = "#f5f5f5",
+      paper_bgcolor = "#f5f5f5",
+      margin = list(t = 100, b = 80, l = 80, r = 50)
+    )
+})
+
+# ---------- Plot UI ----------
+output$plot1_ui <- renderUI({
+  req(input$custom_var)
+  per_var_height <- 300  # pixels per subplot row
+  total_height <- length(input$custom_var) * per_var_height
+  
+  plotlyOutput(
+    "plot1",
+    height = total_height,
+    width = "100%"
+  )
+})
+
+
+# ---------- Partner Logo ----------
 output$partnerLogoUI_custom <- renderUI({
   req(input$custom_site)
-  cur_stn <- input$custom_site
-  station_meta[[cur_stn]]['logos']
+  station_meta[[input$custom_site]][["logos"]]
 })
 
-# create warning for down stations
+# ---------- Down Station Warning ----------
 observe({
-  req(preset_data_query())
-  req(input$custom_site)
-  if(input$smenu == "cstm_graph"){
-    if(input$custom_site %in% down_stations){
-      showModal(modalDialog(
-        title = "Warning:",
-        paste("This station is currently offline."),
-        easyClose = T
-      ))
-    }
+  req(input$custom_site, preset_data_query())
+  
+  if (
+    input$smenu == "cstm_graph" &&
+    input$custom_site %in% down_stations
+  ) {
+    showModal(modalDialog(
+      title = "Warning:",
+      "This station is currently offline.",
+      easyClose = TRUE
+    ))
   }
-}
-)
-
-
+})

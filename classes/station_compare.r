@@ -1,3 +1,4 @@
+
 #### Station Comparisons ####
 
 #
@@ -36,7 +37,21 @@ stn_compare_data_query <- reactive({
     conn <- do.call(DBI::dbConnect, args)
     on.exit(DBI::dbDisconnect(conn))
     
-    query <- lapply(input$station_site, function(x) paste0("SELECT DateTime, WatYr, ", input$compare_var, ", '", x,"' as station FROM clean_", x," where WatYr = ", input$station_year)) %>%
+    query <- lapply(input$station_site, function(x) {
+      
+      table_name <- if (x == "uppercruickshank") {
+        paste0("qaqc_", x)
+      } else {
+        paste0("clean_", x)
+      }
+      
+      paste0(
+        "SELECT DateTime, WatYr, ", input$compare_var,
+        ", '", x, "' as station FROM ", table_name,
+        " WHERE WatYr = ", input$station_year
+      )
+      
+    }) %>%
       paste(collapse = " UNION ")
     
     data <- dbGetQuery(conn, query)
@@ -81,4 +96,3 @@ output$plot_compare_stn <- renderPlotly({
   
   
 })
-

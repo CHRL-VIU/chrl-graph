@@ -34,7 +34,26 @@ annual_data_query <- reactive({
   withProgress(message = 'Requesting Data... ', value = 1, {
       conn <- do.call(DBI::dbConnect, args)
       on.exit(DBI::dbDisconnect(conn))
-      query <- paste0("SELECT DateTime, WatYr,", input$compare_var, " FROM clean_", input$annual_site,";")
+      
+      # CRUICK HOTFIX
+      table_name <- if (
+        input$annual_site == "uppercruickshank" &&
+        input$compare_var == "SWE"
+      ) {
+        paste0("qaqc_", input$annual_site)
+      } else {
+        paste0("clean_", input$annual_site)
+      }
+      
+      query <- paste0(
+        "SELECT DateTime, WatYr,",
+        input$compare_var,
+        " FROM ",
+        table_name,
+        ";"
+      )
+      
+      
       data <- dbGetQuery(conn, query) %>%
         mutate(
           plotTime = if_else(month(DateTime) < 10,
