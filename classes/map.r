@@ -3,7 +3,7 @@
 #render leaflet
 output$map <- renderLeaflet({
   leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
-    addProviderTiles("CartoDB.Positron") %>%
+    addTiles() %>%
     # addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
     # addLayersControl(baseGroups = c("Default", "Satellite"), options = layersControlOptions(collapsed = FALSE), position = ("topleft")) %>%
     setView(lng = -128, lat = 53.75, zoom = 5) %>%
