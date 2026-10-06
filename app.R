@@ -144,30 +144,50 @@ ui <- function(request) {
                                      h1("Custom Graphs", align = "center")
                               )
                             ),
+                            
                             fluidRow(
-                              column(2,
-                                     selectInput("custom_site",
-                                                 label = "Choose a Weather Station:",
-                                                 choices = stnNameDict,
-                                                 selected = cur_stn,
-                                                 selectize = F
-                                                 
-                                     ),
-                                     selectInput("custom_year", "Select Water Year", "",  selectize = F),
-                                     uiOutput("varSelection"),
-                                     uiOutput("cleanSnowButton")
+                              column(
+                                2,
+                                selectInput(
+                                  "custom_site",
+                                  label = "Choose a Weather Station:",
+                                  choices = stnNameDict,
+                                  selected = cur_stn,
+                                  selectize = F
+                                ),
+                                selectInput(
+                                  "custom_year",
+                                  "Select Water Year",
+                                  "",
+                                  selectize = F
+                                ),
+                                uiOutput("varSelection"),
+                                uiOutput("cleanSnowButton")
                               ),
-                              column(10,
-                                     htmlOutput('header2'),
-                                     wellPanel(
-                                       plotlyOutput("plot1", height = "40vh"),
-                                       chooseSliderSkin('Flat',color = "#99ccff"),
-                                       div(style = "margin-top:-3.5em; margin-bottom: -2em",
-                                           fluidRow(uiOutput("slider"), align = 'center'))
-                                     ),
-                                     htmlOutput('partnerLogoUI_custom')
-                              )
                               
+                              column(
+                                10,
+                                htmlOutput("header2"),
+                                
+                                wellPanel(
+                                  uiOutput("plot1_ui"),
+                                  
+                                  chooseSliderSkin(
+                                    "Flat",
+                                    color = "#99ccff"
+                                  ),
+                                  
+                                  div(
+                                    style = "margin-top:-3.5em; margin-bottom:-2em",
+                                    fluidRow(
+                                      uiOutput("slider"),
+                                      align = "center"
+                                    )
+                                  )
+                                ),
+                                
+                                htmlOutput("partnerLogoUI_custom")
+                              )
                             )
                     ),
                     tabItem("ann_compare",
