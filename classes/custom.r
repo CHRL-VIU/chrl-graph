@@ -191,55 +191,91 @@ final_custom_data <- reactive({
 })
 
 # ---------- Plot ----------
-output$plot1 <- renderPlotly({
-  req(final_custom_data(), input$custom_var)
-  
-  df <- final_custom_data()
-  cols_to_plot <- setdiff(names(df), "DateTime")
-  validate(need(length(cols_to_plot) > 0, "No variables selected."))
-  
-  # Map SQL cols -> display names
-  var_map <- varsDict
-  if(input$custom_site %in% c("plummerhut", "placeglacier")){
-    var_map[["Air Temperature (\u00b0C)"]] <- "Air_Temp_2"
-    var_map[["Air Temperature Alt (\u00b0C)"]] <- "Air_Temp"
-    var_map[["Snow Depth (cm)"]] <-  "Snow_Depth_2"
-    var_map[["Snow Depth Alt (cm)"]] <- "Snow_Depth"
-  }
-  label_map <- setNames(names(var_map), unlist(var_map)) # SQL col -> label
-  
-  # Build one Plotly trace per variable
-  plots <- lapply(cols_to_plot, function(col){
-    plot_ly(df, x = ~DateTime, y = as.formula(paste0("~`", col, "`")),
-            type = 'scatter', mode = 'lines', name = label_map[col])
-  })
-  
-  # Combine vertically with shared X-axis
-  subplot(plots, nrows = length(plots), shareX = TRUE, titleY = TRUE) %>%
-    layout(
-      plot_bgcolor = "#f5f5f5",
-      paper_bgcolor = "#f5f5f5",
-      margin = list(t = 100, b = 80, l = 80, r = 50)
-    )
-})
 
-# ---------- Plot UI ----------
 output$plot1_ui <- renderUI({
   req(input$custom_var)
-  per_var_height <- 300  # pixels per subplot row
-  total_height <- length(input$custom_var) * per_var_height
   
-  plotlyOutput(
-    "plot1",
-    height = total_height,
-    width = "100%"
+  plot_ids <- paste0("custom_plot_", seq_along(input$custom_var))
+  
+  tagList(
+    lapply(plot_ids, function(id) {
+      plotlyOutput(id, height = "300px")
+    })
   )
 })
 
 
+observe({
+  req(input$custom_var)
+  req(final_custom_data())
+  
+  custom_data <- final_custom_data()
+  
+  # Get the database column names corresponding to the selected
+  # display names.
+  sql_cols <- unlist(
+    get_db_vars(input$custom_site, input$custom_var)
+  )
+  
+  # Create one plot for each selected variable.
+  for (i in seq_along(input$custom_var)) {
+    
+    local({
+      plot_id <- paste0("custom_plot_", i)
+      display_name <- input$custom_var[i]
+      sql_col <- sql_cols[i]
+      
+      output[[plot_id]] <- renderPlotly({
+        
+        req(
+          !is.null(custom_data),
+          nrow(custom_data) > 0,
+          sql_col %in% names(custom_data)
+        )
+        
+        plot_data <- custom_data %>%
+          dplyr::select(
+            DateTime,
+            dplyr::all_of(sql_col)
+          )
+        
+        req(nrow(plot_data) > 0)
+        
+        names(plot_data)[2] <- "value"
+        
+        p <- ggplot(
+          plot_data,
+          aes(x = DateTime, y = value)
+        ) +
+          geom_line() +
+          labs(
+            x = NULL,
+            y = display_name
+          ) +
+          theme_bw()
+        
+        plotly::ggplotly(p) |>
+          layout(
+            plot_bgcolor = "#f5f5f5",
+            paper_bgcolor = "#f5f5f5",
+            margin = list(
+              b = 40,
+              r = 50,
+              l = 70,
+              t = 10
+            )
+          )
+      })
+    })
+  }
+})
+
+
 # ---------- Partner Logo ----------
+
 output$partnerLogoUI_custom <- renderUI({
   req(input$custom_site)
+  
   station_meta[[input$custom_site]][["logos"]]
 })
 
