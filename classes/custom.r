@@ -162,10 +162,13 @@ final_custom_data <- reactive({
   df <- customDataFilter()
   
   # resolve SQL column names using dictionaries.R
-  sql_cols <- unlist(get_db_vars(input$custom_site, input$custom_var))
+  sql_cols <- get_db_vars(
+    input$custom_site,
+    stats::setNames(input$custom_var, input$custom_var)
+  )
   
   df <- df %>%
-    dplyr::select(DateTime, dplyr::any_of(sql_cols))
+    dplyr::select(DateTime, dplyr::any_of(unname(sql_cols)))
   
   # optional snow depth spike cleaning
   if (
@@ -214,7 +217,10 @@ observe({
   # Get the database column names corresponding to the selected
   # display names.
   sql_cols <- unlist(
-    get_db_vars(input$custom_site, input$custom_var)
+    get_db_vars(
+      input$custom_site,
+      stats::setNames(input$custom_var, input$custom_var)
+    )
   )
   
   # Create one plot for each selected variable.

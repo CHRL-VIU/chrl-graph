@@ -84,16 +84,18 @@ station_vars_override <- list(
 )
 
 get_db_vars <- function(site, labels) {
-  # Keep names so we can apply overrides
-  base <- varsDict[labels]  # keep names
+  # Map display labels to SQL column names, preserving display-label names
+  base <- unlist(varsDict[names(labels)])
   
-  if (!is.null(station_vars_override[[site]])) {
-    overrides <- station_vars_override[[site]]
-    # replace values for labels that have an override
-    base[names(base) %in% names(overrides)] <- overrides[names(base)[names(base) %in% names(overrides)]]
+  # Apply station-specific overrides
+  overrides <- station_vars_override[[site]]
+  
+  if (!is.null(overrides)) {
+    matching_labels <- intersect(names(base), names(overrides))
+    base[matching_labels] <- unlist(overrides[matching_labels])
   }
   
-  return(unname(base))  # return just the SQL columns
+  return(base)
 }
 
 # imgs should be saved under the www/ folder
