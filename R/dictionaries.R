@@ -64,7 +64,8 @@ preset_vars <- c(
   "Tipping Bucket Increment (mm)" = "PP_Tipper",
   "Stand Pipe Raw (mm)" = "PC_Raw_Pipe",
   "Wind Speed (km/h)" = "Wind_Speed",
-  "Wind Direction (deg)" = "Wind_Dir"
+  "Wind Direction (deg)" = "Wind_Dir",
+  "Snow Water Equivalent (mm)" = "SWE"
 )
 
 # Station-specific overrides to vars lists

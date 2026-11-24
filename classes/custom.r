@@ -87,16 +87,19 @@ output$slider <- renderUI({
   conn <- do.call(DBI::dbConnect, args)
   on.exit(DBI::dbDisconnect(conn))
   
-  # CRUICK HOTFIX
-  table_name <- if (
-    input$custom_site == "uppercruickshank" &&
-    !is.null(input$custom_var) &&
-    "Snow Water Equivalent (mm)" %in% input$custom_var
-  ) {
-    paste0("qaqc_", input$custom_site)
-  } else {
-    paste0("clean_", input$custom_site)
-  }
+  # # CRUICK HOTFIX
+  # table_name <- if (
+  #   input$custom_site == "uppercruickshank" &&
+  #   !is.null(input$custom_var) &&
+  #   "Snow Water Equivalent (mm)" %in% input$custom_var
+  # ) {
+  #   paste0("qaqc_", input$custom_site)
+  # } else {
+  #   paste0("clean_", input$custom_site)
+  # }
+  
+  # Always use clean data
+  table_name <- paste0("clean_", input$custom_site)
   
   query <- paste0(
     "SELECT DateTime FROM ",
@@ -169,6 +172,16 @@ final_custom_data <- reactive({
   
   df <- df %>%
     dplyr::select(DateTime, dplyr::any_of(unname(sql_cols)))
+  
+  # Station-specific hotfixes
+  if (
+    input$custom_site == "lowercain" &&
+    input$custom_year == 2027 &&
+    "Snow Depth (cm)" %in% input$custom_var
+  ) {
+    df[[sql_cols[["Snow Depth (cm)"]]]] <-
+      df[[sql_cols[["Snow Depth (cm)"]]]] + 10
+  }
   
   # optional snow depth spike cleaning
   if (
