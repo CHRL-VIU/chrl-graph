@@ -26,7 +26,7 @@ preset_data_query <- reactive({
   query_cols <- c("DateTime", unname(sql_cols))  # DateTime + mapped columns
   
   table_name <- if (input$preset_site == "uppercruickshank") {
-    paste0("qaqc_", input$preset_site)
+    paste0("clean_", input$preset_site)
   } else {
     paste0("clean_", input$preset_site)
   }
@@ -75,11 +75,18 @@ output$precipTable <- renderTable({
   req(preset_data_query())
   req(input$preset_site)
   
+  print(paste("Selected station:", input$preset_site))
+  
   if(input$preset_site == "mountarrowsmith"){
     return(NULL)  # no tipper rain at Mount Arrowsmith
   }
   
   sql_cols <- get_db_vars(input$preset_site, preset_vars)
+  print("---- STATION MAPPING ----")
+  print(input$preset_site)
+  print(sql_cols)
+  print("---- END MAPPING ----")
+  
   tipper_col <- sql_cols[["Tipping Bucket Increment (mm)"]]
   
   df <- preset_data_query() %>%
@@ -134,9 +141,21 @@ output$plot_Snow <- renderPlotly({
   req(input$preset_site)
   
   sql_cols <- get_db_vars(input$preset_site, preset_vars)
-  snow_col <- sql_cols[["Snow Depth (cm)"]]
   
-  if(input$preset_site == "mountarrowsmith"){
+  # Select snow variable
+  if (input$preset_site == "uppercruickshank") {
+    snow_col <- sql_cols[["Snow Water Equivalent (mm)"]]
+    snow_name <- "Snow Water Equivalent (mm)"
+  } else if (input$preset_site == "placeglacier") {
+    snow_col <- NULL
+    snow_name <- "Snow Depth (cm)"
+  } else {
+    snow_col <- sql_cols[["Snow Depth (cm)"]]
+    snow_name <- "Snow Depth (cm)"
+  }
+  
+  # Select precipitation variable
+  if (input$preset_site == "mountarrowsmith") {
     precip_col <- sql_cols[["Stand Pipe Raw (mm)"]]
     precip_name <- "Total Precip (mm)"
   } else {
@@ -144,32 +163,63 @@ output$plot_Snow <- renderPlotly({
     precip_name <- "Rain (mm)"
   }
   
+  # Build plotting data
   df <- preset_data_query() %>%
-    select(DateTime, snow = all_of(snow_col), precip = all_of(precip_col)) %>%
-    mutate(precip = ifelse(precip < 0, 0, precip))
+    mutate(
+      snow = if (is.null(snow_col)) {
+        NA_real_
+      } else if (input$preset_site == "lowercain") {
+        .data[[snow_col]] + 10
+      } else {
+        .data[[snow_col]]
+      },
+      precip = pmax(.data[[precip_col]], 0, na.rm = FALSE)
+    ) %>%
+    select(DateTime, snow, precip)
   
-  snow_name <- "Snow Depth (cm)"
-  
-  if(input$cleanSnow == "yes"){
-    df_cln <- spike_clean(df, "DateTime", "snow", spike_th = 10, roc_hi_th = 40, roc_low_th = 75)
-    weatherdash::graph_two(
-      data = as.data.frame(df_cln),
-      x = "DateTime",
-      y1 = "snow_clean",
-      y2 = "precip",
-      y1_name = snow_name,
-      y2_name = precip_name,
-      margin = marg
+  # Apply spike correction where appropriate
+  if (input$cleanSnow == "yes" &&
+      !input$preset_site %in% c("uppercruickshank", "placeglacier")) {
+    
+    df <- spike_clean(
+      df, "DateTime", "snow",
+      spike_th = 10,
+      roc_hi_th = 40,
+      roc_low_th = 75
     )
+    
+    snow_var <- "snow_clean"
+    
   } else {
-    weatherdash::graph_two(
-      data = df,
-      x = "DateTime",
-      y1 = "snow",
-      y2 = "precip",
-      y1_name = snow_name,
-      y2_name = precip_name,
-      margin = marg
+    snow_var <- "snow"
+  }
+  
+  # Plot snow + precipitation
+  weatherdash::graph_two(
+    data = as.data.frame(df),
+    x = "DateTime",
+    y1 = snow_var,
+    y2 = "precip",
+    y1_name = snow_name,
+    y2_name = precip_name,
+    margin = marg
+  )
+})
+
+# Snow depth availability note
+output$snowNote <- renderUI({
+  req(input$preset_site)
+  
+  if (input$preset_site == "uppercruickshank") {
+    tags$p(
+      tags$b("Note: Snow depth measurements are currently unavailable at this station. Snow Water Equivalent (SWE) is displayed as an alternative measure."),
+      style = "color: red; margin-bottom: 10px;"
+    )
+    
+  } else if (input$preset_site == "placeglacier") {
+    tags$p(
+      tags$b("Note: Snow depth measurements are currently unavailable at this station."),
+      style = "color: red; margin-bottom: 10px;"
     )
   }
 })

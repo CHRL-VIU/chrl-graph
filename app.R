@@ -129,6 +129,7 @@ ui <- function(request) {
                                      wellPanel(class ="line_graph_container",
                                                plotlyOutput("plot_T_RH", height = "40vh")),
                                      wellPanel(class ="line_graph_container",
+                                               uiOutput("snowNote"),
                                                plotlyOutput("plot_Snow", height = "40vh"),
                                                radioButtons("cleanSnow", "Preform automated spike correction on Snow Depth?:", inline = T,
                                                             c("Yes" = "yes",
